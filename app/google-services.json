@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "220196419181",
+    "project_id": "comparilist-d2723",
+    "storage_bucket": "comparilist-d2723.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220196419181:android:f0bb0d5a9f0ac07101b164",
+        "android_client_info": {
+          "package_name": "com.noxapps.grocerycomparer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220196419181-ml1qib8neti01g00vucktvv0492dopbs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJA1WlWqYFzOxBpO4ytbhVHbd0wurg5HU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220196419181-ml1qib8neti01g00vucktvv0492dopbs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
