@@ -4,7 +4,6 @@ class aldiProduct (
     name:String,
     price:String,
     pricePer:String,
-    imgSrc:String//,
-    //sku:Int
+    imgSrc:String
     ){
 }
