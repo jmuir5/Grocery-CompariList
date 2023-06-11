@@ -131,6 +131,10 @@ class MainActivity : ComponentActivity() {
         }
 
 
+
+        for(i in dataFileArray.indices){
+
+        }
         setContent {
             GroceryComparerTheme {
                 // A surface container using the 'background' color from the theme
