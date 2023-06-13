@@ -41,7 +41,7 @@ import androidx.navigation.compose.rememberNavController
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        ObjectBox.init(this)
         setContent {
             GroceryComparerTheme {
                 // A surface container using the 'background' color from the theme

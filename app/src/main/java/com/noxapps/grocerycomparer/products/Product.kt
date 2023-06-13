@@ -5,7 +5,7 @@ class Product(
     val price:String,
     val pricePer:String?=price+" per each",
     val imgSrc:String,
-    val sk:Long?=-1,
+    val sku:Long=-1,
     val origin:String
 ) {
 }

@@ -2,11 +2,11 @@ package com.noxapps.grocerycomparer
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.currentCompositionLocalContext
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.noxapps.grocerycomparer.products.OBProduct
+import com.noxapps.grocerycomparer.products.OBProduct_
 import com.noxapps.grocerycomparer.products.Product
 import java.io.File
 import java.nio.file.Files
@@ -56,6 +56,7 @@ class InitViewModel: ViewModel() {
                 if (localLines == firebaseLines) {
                     Log.d("file status", "files Match!")
                     initStatus = 1
+                    //todo gotonextPage()
                     buildArrays(dataFileArray, productArray)
                     findMother(productArray)
 
@@ -85,6 +86,7 @@ class InitViewModel: ViewModel() {
                                 if (i == 3) {
                                     Log.d("download status", "all downloads completed")
                                     buildArrays(dataFileArray, productArray)
+                                    //todo updateDatabase()
                                     findMother(productArray)
                                 }
                             }.addOnFailureListener {
@@ -123,8 +125,9 @@ class InitViewModel: ViewModel() {
                         )
                         if (i == 3) {
                             Log.d("download status", "all downloads completed")
-                            buildArrays(dataFileArray, productArray)
-                            findMother(productArray)
+                            buildDatabase(dataFileArray)
+                            //buildArrays(dataFileArray, productArray)
+                            //findMother(productArray)
                         }
                     }.addOnFailureListener {
                         Log.d(
@@ -206,6 +209,135 @@ fun buildArrays(dataFileArray:List<File>, productArray:MutableList<Product>){
     }
     Log.d("time measurement", "total elapsed time: "+buildTime)
 }
+
+fun buildDatabase(dataFileArray:List<File>){
+    val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
+    val productArray = mutableListOf<OBProduct>()
+    for (i in dataFileArray.indices) {
+        dataFileArray[i].bufferedReader().lines().forEach {
+            //Log.d("txt text", it.split(",").toString())
+            if (it != "\n") {
+                when (i) {
+                    0 -> productArray.add(
+                        OBProduct(
+                            0, it.split(",")[0],
+                            it.split(",")[1], it.split(",")[2],
+                            it.split(",")[3], -1,//it.split(",")[4].toInt(),
+                            "coles",
+                        )
+                    )
+                    1 -> productArray.add(
+                        OBProduct(
+                            0, it.split(",")[0],
+                            it.split(",")[1], it.split(",")[2],
+                            it.split(",")[3], it.split(",")[4].toLong(),
+                            origin = "Woolworths",
+                        )
+                    )
+                    2 -> productArray.add(
+                        OBProduct(
+                            0,it.split(",")[0],
+                            it.split(",")[1], it.split(",")[2],
+                            it.split(",")[3], -1,
+                            "aldi",
+                        )
+                    )
+                    3 -> {
+                        try {
+                            productArray.add(
+                                OBProduct(
+                                    0, it.split(";")[0],
+                                    it.split(";")[1], it.split(";")[2],
+                                    it.split(";")[3], it.split(";")[4].toLong(),
+                                    "iga",
+                                )
+                            )
+                        } catch (e: Exception) {
+                            Log.d("iga problem line", e.toString())
+                            Log.d("iga problem line", it.split(";").toString())
+                            Log.d("iga problem line", it.toString())
+
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    productBox.put(productArray)
+}
+
+fun updateDatabase(dataFileArray:List<File>) {
+    val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
+
+    for (i in dataFileArray.indices) {
+        dataFileArray[i].bufferedReader().lines().forEach {
+            //Log.d("txt text", it.split(",").toString())
+            var received: Product = Product("failed", "", "", "", -1, "")
+            if (it != "\n") {
+                when (i) {
+                    0 -> received = Product(
+                        it.split(",")[0],
+                        it.split(",")[1], it.split(",")[2],
+                        it.split(",")[3], it.split(",")[4].toLong(),
+                        "coles",
+                    )
+                    1 -> received = Product(
+                        it.split(",")[0],
+                        it.split(",")[1], it.split(",")[2],
+                        it.split(",")[3], it.split(",")[4].toLong(),
+                        origin = "Woolworths",
+                    )
+
+                    2 -> received = Product(
+                        it.split(",")[0],
+                        it.split(",")[1], it.split(",")[2],
+                        it.split(",")[3], -1,
+                        "aldi",
+                    )
+
+                    3 -> {
+                        try {
+                            received = Product(
+                                it.split(";")[0],
+                                it.split(";")[1], it.split(";")[2],
+                                it.split(";")[3], it.split(";")[4].toLong(),
+                                "iga",
+                            )
+
+                        } catch (e: Exception) {
+                            Log.d("iga problem line", e.toString())
+                            Log.d("iga problem line", it.split(";").toString())
+                            Log.d("iga problem line", it.toString())
+
+                        }
+
+                    }
+                }
+                var result:OBProduct
+                val skuQuery = productBox
+                    .query(OBProduct_.sku.equal(received.sku))
+                    .build()
+                val nameQuery = productBox
+                    .query(OBProduct_.name.equal(received.name))
+                    .build()
+                try {
+                    result=skuQuery.findUnique()!!
+                }catch(e:Exception){
+                    try {
+                        result= nameQuery.findFirst()!!
+                    }catch(e:Exception)
+                }
+                productBox.put(OBProduct())
+
+
+            }
+            Log.d("time measurement", "shop " + i + " done")
+        }
+
+    }
+}
+
 
 fun findMother(productArray:MutableList<Product>){
     val returnArray = mutableListOf<Product>()
