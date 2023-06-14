@@ -8,7 +8,10 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun Init(viewModel: InitViewModel = InitViewModel(), navController: NavHostController) {
+    viewModel.navController = navController
     viewModel.initialiseData(LocalContext.current)
     Text(text = "Initializing")
-
+    if (viewModel.initStatus==1){
+        navController.navigate(Routes.Home.Path)
+    }
 }

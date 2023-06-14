@@ -3,6 +3,7 @@ package com.noxapps.grocerycomparer
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.noxapps.grocerycomparer.products.OBProduct
@@ -13,14 +14,15 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.measureTimeMillis
 
-class InitViewModel: ViewModel() {
-
+class InitViewModel(): ViewModel() {
+    var initStatus = 0
+    lateinit var navController: NavHostController
     fun initialiseData(context:Context) {
         lateinit var localSettingsFile: File
 
         val storage = Firebase.storage
         val firebaseStorageRef = storage.reference
-        val testTxt = firebaseStorageRef.child("test_firebase.txt")
+        val testTxt = firebaseStorageRef.child("test_firebase4.txt")
 
         val colesTxt = firebaseStorageRef.child("products/colesProducts.txt")
         val woolworthsTxt = firebaseStorageRef.child("products/woolworthsProducts.txt")
@@ -35,11 +37,13 @@ class InitViewModel: ViewModel() {
         val dataFileArray = listOf(colesDataFile, woolworthsDataFile, aldiDataFile, igaDataFile)
 
         val productArray = mutableListOf<Product>()
+        var downloads = mutableListOf(0,0)
 
-        var initStatus = 0
-        if (File(context.filesDir, "localTestFile").exists()) {
+
+
+        if (File(context.filesDir, "localTestFile4").exists()) {
             Log.d("fileStatus", "file exists")
-            localSettingsFile = File(context.filesDir, "localTestFile")
+            localSettingsFile = File(context.filesDir, "localTestFile4")
             val firebaseSettingsFile = File.createTempFile("firebaseSettingsFile", "txt")
             testTxt.getFile(firebaseSettingsFile).addOnSuccessListener {
                 Log.d("download success", "succeded in downloading file from firebase")
@@ -56,9 +60,10 @@ class InitViewModel: ViewModel() {
                 if (localLines == firebaseLines) {
                     Log.d("file status", "files Match!")
                     initStatus = 1
+                    navController.navigate(Routes.Home.Path)
                     //todo gotonextPage()
-                    buildArrays(dataFileArray, productArray)
-                    findMother(productArray)
+                    //buildArrays(dataFileArray, productArray)
+                    //findMother(productArray)
 
                 } else {
                     Log.d("file status", "files do not match!")
@@ -83,20 +88,31 @@ class InitViewModel: ViewModel() {
                                     "download success",
                                     "succeded in downloading file from ${firebaseArray[i].name}"
                                 )
-                                if (i == 3) {
+                                downloads[0]+=1
+                                downloads[1]+=1
+                                if (downloads[0] == 4) {
                                     Log.d("download status", "all downloads completed")
-                                    buildArrays(dataFileArray, productArray)
-                                    //todo updateDatabase()
-                                    findMother(productArray)
+                                    //buildArrays(dataFileArray, productArray)
+                                    if (downloads[1] == 4) {
+                                        Log.d("download status", "all downloads completed successfully")
+                                        updateDatabase(dataFileArray)
+                                        navController.navigate(Routes.Home.Path)
+                                    }
+                                    //findMother(productArray)
+                                    initStatus=1
                                 }
                             }.addOnFailureListener {
                                 Log.d(
                                     "download failed",
                                     "failed to download file from ${firebaseArray[i].name}"
                                 )// Handle any errors
+                                if (downloads[0] == 4) {
+                                    Log.d("download status", "all downloads completed, "+downloads[1]+"/4 successful")
+
+                                    initStatus=1
+                                }
                             }
                         }
-                        initStatus = 1
 
 
                     } else {
@@ -114,7 +130,7 @@ class InitViewModel: ViewModel() {
             }
         } else {
             Log.d("fileStatus", "file does not exist")
-            localSettingsFile = File(context.filesDir, "localTestFile")
+            localSettingsFile = File(context.filesDir, "localTestFile4")
             testTxt.getFile(localSettingsFile).addOnSuccessListener {
                 Log.d("download success", "succeded in downloading file from firebase")
                 for (i in firebaseArray.indices) {
@@ -123,20 +139,32 @@ class InitViewModel: ViewModel() {
                             "download success",
                             "succeded in downloading file from ${firebaseArray[i].name}"
                         )
-                        if (i == 3) {
+                        downloads[0]+=1
+                        downloads[1]+=1
+                        if (downloads[0] == 4) {
                             Log.d("download status", "all downloads completed")
-                            buildDatabase(dataFileArray)
                             //buildArrays(dataFileArray, productArray)
+                            if (downloads[1] == 4) {
+                                Log.d("download status", "all downloads completed successfully")
+                                buildDatabase(dataFileArray)
+                                navController.navigate(Routes.Home.Path)
+                            }
                             //findMother(productArray)
+                            initStatus=1
                         }
                     }.addOnFailureListener {
                         Log.d(
                             "download failed",
                             "failed to download file from ${firebaseArray[i].name}"
-                        )// Handle any errors
+                        )
+                        if (downloads[0] == 4) {
+                        Log.d("download status", "all downloads completed, "+downloads[1]+"/4 successful")
+
+                        initStatus=1
+                        }// Handle any errors
                     }
                 }
-                initStatus = 1
+
 
             }.addOnFailureListener {
                 Log.d(
@@ -211,7 +239,9 @@ fun buildArrays(dataFileArray:List<File>, productArray:MutableList<Product>){
 }
 
 fun buildDatabase(dataFileArray:List<File>){
+    Log.d("status", "building database")
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
+    productBox.removeAll()
     val productArray = mutableListOf<OBProduct>()
     for (i in dataFileArray.indices) {
         dataFileArray[i].bufferedReader().lines().forEach {
@@ -265,9 +295,11 @@ fun buildDatabase(dataFileArray:List<File>){
         }
     }
     productBox.put(productArray)
+    Log.d("status", "finished building database")
 }
 
 fun updateDatabase(dataFileArray:List<File>) {
+    Log.d("status", "updating database")
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
 
     for (i in dataFileArray.indices) {
@@ -314,39 +346,25 @@ fun updateDatabase(dataFileArray:List<File>) {
 
                     }
                 }
-                var result:OBProduct
+
                 val skuQuery = productBox
                     .query(OBProduct_.sku.equal(received.sku))
                     .build()
                 val nameQuery = productBox
                     .query(OBProduct_.name.equal(received.name))
                     .build()
-                try {
-                    result=skuQuery.findUnique()!!
+                var result = try {
+                    skuQuery.findUnique()!!
                 }catch(e:Exception){
                     try {
-                        result= nameQuery.findFirst()!!
-                    }catch(e:Exception)
+                        nameQuery.findFirst()!!
+                    }catch(e:Exception) {
+                        OBProduct(received)
+                    }
                 }
-                productBox.put(OBProduct())
-
-
+                productBox.put(OBProduct(result.Id, received))
             }
-            Log.d("time measurement", "shop " + i + " done")
-        }
-
-    }
-}
-
-
-fun findMother(productArray:MutableList<Product>){
-    val returnArray = mutableListOf<Product>()
-    val searchTime = measureTimeMillis {
-        for(i in productArray){
-            if(i.name.contains("mother"))returnArray.add(i)
         }
     }
-
-    Log.d("search time", "total elapsed time: "+searchTime)
-
+    Log.d("status", "finished updating database")
 }

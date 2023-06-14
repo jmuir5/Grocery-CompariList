@@ -14,4 +14,22 @@ class OBProduct(
     val sku:Long=-1,
     val origin:String="???"
 ) {
+    constructor(product:Product) : this(
+        0,
+        product.name,
+        product.price,
+        product.pricePer,
+        product.imgSrc,
+        product.sku,
+        product.origin
+    )
+    constructor(id:Long, product:Product):this(
+        id,
+        product.name,
+        product.price,
+        product.pricePer,
+        product.imgSrc,
+        product.sku,
+        product.origin
+    )
 }
