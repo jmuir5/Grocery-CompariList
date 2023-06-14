@@ -61,6 +61,7 @@ fun NavMain(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.Init.Path) {
         composable(Routes.Init.Path) { Init(navController = navController) }
         composable(Routes.Home.Path){Home(navController = navController)}
+        composable(Routes.Search.Path){Search()}
 
     }
 }

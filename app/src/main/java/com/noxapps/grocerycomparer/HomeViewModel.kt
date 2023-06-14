@@ -8,13 +8,6 @@ import io.objectbox.query.QueryBuilder
 
 class HomeViewModel():ViewModel() {
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
-
-
-
-
-
-
-
     fun findMother(): MutableList<OBProduct> {
         val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
         val MotherQuery = productBox
