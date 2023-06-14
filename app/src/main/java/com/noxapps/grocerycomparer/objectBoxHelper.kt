@@ -1,7 +1,7 @@
 package com.noxapps.grocerycomparer
 
 import android.content.Context
-import com.noxapps.grocerycomparer.products.MyObjectBox
+import com.noxapps.grocerycomparer.classes.MyObjectBox
 import io.objectbox.BoxStore
 
 object ObjectBox {

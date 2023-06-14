@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.noxapps.grocerycomparer.products.OBProduct
+import com.noxapps.grocerycomparer.classes.OBProduct
 
 @Composable
 fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController) {

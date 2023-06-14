@@ -46,9 +46,48 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "2:6727980767821931512",
+      "lastPropertyId": "6:3823304058654560869",
+      "name": "OBComparison",
+      "properties": [
+        {
+          "id": "1:5419230326772229253",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7613410363224941427",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:8316213387748581003",
+          "name": "colesProductId",
+          "type": 6
+        },
+        {
+          "id": "4:1506870116491775838",
+          "name": "woolworthsProductId",
+          "type": 6
+        },
+        {
+          "id": "5:3050516611479586239",
+          "name": "igaProductId",
+          "type": 6
+        },
+        {
+          "id": "6:3823304058654560869",
+          "name": "aldiProductId",
+          "type": 6
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "1:3486225151610660571",
+  "lastEntityId": "2:6727980767821931512",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

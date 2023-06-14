@@ -1,13 +1,12 @@
 package com.noxapps.grocerycomparer
 
 import android.util.Log
-import com.noxapps.grocerycomparer.products.OBProduct
-import com.noxapps.grocerycomparer.products.OBProduct_
-import com.noxapps.grocerycomparer.products.Product
+import androidx.lifecycle.ViewModel
+import com.noxapps.grocerycomparer.classes.OBProduct
+import com.noxapps.grocerycomparer.classes.OBProduct_
 import io.objectbox.query.QueryBuilder
-import kotlin.system.measureTimeMillis
 
-class HomeViewModel {
+class HomeViewModel():ViewModel() {
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
 
 

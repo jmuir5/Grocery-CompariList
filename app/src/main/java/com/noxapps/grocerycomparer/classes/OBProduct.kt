@@ -1,4 +1,4 @@
-package com.noxapps.grocerycomparer.products
+package com.noxapps.grocerycomparer.classes
 
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id

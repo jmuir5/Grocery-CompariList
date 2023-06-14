@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.noxapps.grocerycomparer.products.OBProduct
-import com.noxapps.grocerycomparer.products.OBProduct_
-import com.noxapps.grocerycomparer.products.Product
+import com.noxapps.grocerycomparer.classes.OBProduct
+import com.noxapps.grocerycomparer.classes.OBProduct_
+import com.noxapps.grocerycomparer.classes.Product
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths

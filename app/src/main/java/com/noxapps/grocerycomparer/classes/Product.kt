@@ -1,4 +1,4 @@
-package com.noxapps.grocerycomparer.products
+package com.noxapps.grocerycomparer.classes
 
 class Product(
     val name:String,
