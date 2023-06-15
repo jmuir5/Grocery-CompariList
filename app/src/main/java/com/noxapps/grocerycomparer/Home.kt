@@ -32,15 +32,24 @@ fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostContr
         //comparison head
         LazyColumn{
             item(){ comparisonCard(comparison = OBComparison(name = "test comparison",
-                colesProductId =(482368).toLong(),
-                woolworthsProductId = (518128).toLong(),
-                igaProductId =(532655).toLong(),
-                aldiProductId = (531547).toLong()),navController)}
+                colesProductId =(4805).toLong(),
+                woolworthsProductId = (36902).toLong(),
+                igaProductId =(53237).toLong(),
+                aldiProductId = (51775).toLong()),navController)}
         }
         //        currentList.forEach(){
         //            item(){ productCard(it)}
         //        }
         //    }
+        /*colesProductId =(4805).toLong(),
+                woolworthsProductId = (336902).toLong(),
+                igaProductId =(53237).toLong(),
+                aldiProductId = (51775).toLong())*/
+
+        /* work colesProductId =(482368).toLong(),
+        woolworthsProductId = (518128).toLong(),
+        igaProductId =(532655).toLong(),
+        aldiProductId = (531547).toLong())*/
 
     }
 }
