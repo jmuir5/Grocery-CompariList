@@ -60,7 +60,9 @@ class InitViewModel(): ViewModel() {
                 if (localLines == firebaseLines) {
                     Log.d("file status", "files Match!")
                     initStatus = 1
-                    navController.navigate(Routes.Home.Path)
+                    navController.navigate(Routes.Home.Path){
+                        popUpTo(Routes.Home.Path)
+                    }
                     //todo gotonextPage()
                     //buildArrays(dataFileArray, productArray)
                     //findMother(productArray)
@@ -96,7 +98,10 @@ class InitViewModel(): ViewModel() {
                                     if (downloads[1] == 4) {
                                         Log.d("download status", "all downloads completed successfully")
                                         updateDatabase(dataFileArray)
-                                        navController.navigate(Routes.Home.Path)
+                                        navController.navigate(Routes.Home.Path){
+                                            popUpTo(Routes.Home.Path)
+                                        }
+
                                     }
                                     //findMother(productArray)
                                     initStatus=1
@@ -147,7 +152,10 @@ class InitViewModel(): ViewModel() {
                             if (downloads[1] == 4) {
                                 Log.d("download status", "all downloads completed successfully")
                                 buildDatabase(dataFileArray)
-                                navController.navigate(Routes.Home.Path)
+                                navController.navigate(Routes.Home.Path){
+                                    popUpTo(Routes.Home.Path)
+                                }
+
                             }
                             //findMother(productArray)
                             initStatus=1

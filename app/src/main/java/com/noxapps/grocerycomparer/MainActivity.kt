@@ -18,7 +18,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +60,12 @@ fun NavMain(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.Init.Path) {
         composable(Routes.Init.Path) { Init(navController = navController) }
         composable(Routes.Home.Path){Home(navController = navController)}
-        composable(Routes.Search.Path){Search()}
+        composable(Routes.Search.Path+"/{origin}"){backStackEntry ->
+            backStackEntry.arguments?.getString(("origin"))?.let { Search(origin = it) }
+        }
+        composable(Routes.ComparisonView.Path+"/{comparisonId}"){backStackEntry ->
+            backStackEntry.arguments?.getString(("comparisonId"))?.let {ComparisonView(id = it.toLong(), navController = navController)}
+        }
 
     }
 }
