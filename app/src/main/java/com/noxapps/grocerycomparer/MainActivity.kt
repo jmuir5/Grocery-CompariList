@@ -13,9 +13,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.noxapps.grocerycomparer.ui.theme.GroceryComparerTheme
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 
 class MainActivity : ComponentActivity() {
@@ -60,8 +62,17 @@ fun NavMain(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.Init.Path) {
         composable(Routes.Init.Path) { Init(navController = navController) }
         composable(Routes.Home.Path){Home(navController = navController)}
-        composable(Routes.Search.Path+"/{origin}"){backStackEntry ->
-            backStackEntry.arguments?.getString(("origin"))?.let { Search(origin = it) }
+        composable(Routes.Search.Path+"/{origin}/{comparisonId}",
+            arguments = listOf(
+                navArgument("origin") { type = NavType.StringType },
+                navArgument("comparisonId") { type = NavType.LongType })){ backStackEntry ->
+            val origin = backStackEntry.arguments?.getString("origin")
+            val comparisonId = backStackEntry.arguments?.getLong("comparisonId")
+            if (origin != null) {
+                if (comparisonId != null) {
+                    Search(navController = navController, origin = origin, comparisonId = comparisonId)
+                }
+            }
         }
         composable(Routes.ComparisonView.Path+"/{comparisonId}"){backStackEntry ->
             backStackEntry.arguments?.getString(("comparisonId"))?.let {ComparisonView(id = it.toLong(), navController = navController)}

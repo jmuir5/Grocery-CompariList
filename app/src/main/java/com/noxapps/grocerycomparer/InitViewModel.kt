@@ -69,7 +69,7 @@ class InitViewModel(): ViewModel() {
 
                 } else {
                     Log.d("file status", "files do not match!")
-                    context.openFileOutput("localTestFile", Context.MODE_PRIVATE)
+                    context.openFileOutput("localTestFile4", Context.MODE_PRIVATE)
                         .use {
                             firebaseLines.forEach { it2 ->
                                 it.write(it2.toByteArray())
@@ -208,7 +208,7 @@ fun buildArrays(dataFileArray:List<File>, productArray:MutableList<Product>){
                                 it.split(",")[0],
                                 it.split(",")[1], it.split(",")[2],
                                 it.split(",")[3], it.split(",")[4].toLong(),
-                                origin = "Woolworths",
+                                origin = "woolworths",
                             )
                         )
                         2 -> productArray.add(
@@ -269,7 +269,7 @@ fun buildDatabase(dataFileArray:List<File>){
                             0, it.split(",")[0],
                             it.split(",")[1], it.split(",")[2],
                             it.split(",")[3], it.split(",")[4].toLong(),
-                            origin = "Woolworths",
+                            origin = "woolworths",
                         )
                     )
                     2 -> productArray.add(
@@ -326,7 +326,7 @@ fun updateDatabase(dataFileArray:List<File>) {
                         it.split(",")[0],
                         it.split(",")[1], it.split(",")[2],
                         it.split(",")[3], it.split(",")[4].toLong(),
-                        origin = "Woolworths",
+                        origin = "woolworths",
                     )
 
                     2 -> received = Product(

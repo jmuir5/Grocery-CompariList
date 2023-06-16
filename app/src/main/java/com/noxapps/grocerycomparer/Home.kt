@@ -24,33 +24,24 @@ import com.noxapps.grocerycomparer.classes.OBProduct
 @Composable
 fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController) {
     //var currentList by remember(mutableStateOf())
+    val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     Column() {
         Text(text = "home page")
-        Button(onClick = { navController.navigate(Routes.Search.Path+"/any")/*TODO: add Comparison*/ }) {
+        Button(onClick = {
+            val comparison = OBComparison()
+            comparisonBox.put(comparison)
+            navController.navigate(Routes.ComparisonView.Path+"/"+comparison.id)/*TODO: add Comparison*/ }) {
             Text(text = "Add Product")
         }
         //comparison head
-        LazyColumn{
-            item(){ comparisonCard(comparison = OBComparison(name = "test comparison",
-                colesProductId =(4805).toLong(),
-                woolworthsProductId = (36902).toLong(),
-                igaProductId =(53237).toLong(),
-                aldiProductId = (51775).toLong()),navController)}
+        LazyColumn {
+            comparisonBox.all.forEach {
+                item() {
+                    Spacer(modifier = Modifier.height(1.dp))
+                    comparisonCard(it, navController)
+                }
+            }
         }
-        //        currentList.forEach(){
-        //            item(){ productCard(it)}
-        //        }
-        //    }
-        /*colesProductId =(4805).toLong(),
-                woolworthsProductId = (336902).toLong(),
-                igaProductId =(53237).toLong(),
-                aldiProductId = (51775).toLong())*/
-
-        /* work colesProductId =(482368).toLong(),
-        woolworthsProductId = (518128).toLong(),
-        igaProductId =(532655).toLong(),
-        aldiProductId = (531547).toLong())*/
-
     }
 }
 
@@ -60,9 +51,9 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
     val screenWidth = configuration.screenWidthDp
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
     Row(modifier = Modifier
-        .width(screenWidth.dp)
+        .width(screenWidth.dp).height(200.dp)
         ) {
-        Column(modifier = Modifier.width((screenWidth*0.16).dp), horizontalAlignment = Alignment.CenterHorizontally){//head
+        Column(modifier = Modifier.width((screenWidth*0.16).dp).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally){//head
             Text(comparison.name)
             Button(onClick = { navController.navigate(Routes.ComparisonView.Path+"/"+comparison.id) }) {
                 Text("Edit")
@@ -71,6 +62,7 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
         Column(modifier = Modifier
             .width((screenWidth * 0.21).dp)
             .background(Color(0xFFFFC2C2))
+            .fillMaxHeight()
             ){//coles
             if(comparison.colesProductId!= (0).toLong()){
                 comparisonItem(product = productBox[comparison.colesProductId], width =screenWidth * 0.21 )
@@ -84,6 +76,7 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
         Column(modifier = Modifier
             .width((screenWidth * 0.21).dp)
             .background(Color(0xFFc4ffc2))
+            .fillMaxHeight()
             ){//woolworths
             if(comparison.woolworthsProductId!= (0).toLong()){
                 comparisonItem(product = productBox[comparison.woolworthsProductId], width =screenWidth * 0.21 )
@@ -95,6 +88,7 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
         Column(modifier = Modifier
             .width((screenWidth * 0.21).dp)
             .background(Color(0xfffffcc2))
+            .fillMaxHeight()
             ){//aldi
             if(comparison.aldiProductId!= (0).toLong()){
                 comparisonItem(product = productBox[comparison.aldiProductId], width =screenWidth * 0.21 )
@@ -105,7 +99,8 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
         }
         Column(modifier = Modifier
             .width((screenWidth * 0.21).dp)
-            .background(Color(0xFFe8e8e8))
+            .background(Color(0xFFc7fdff))
+            .fillMaxHeight()
             ){//iga
             if(comparison.igaProductId!= (0).toLong()){
                 comparisonItem(product = productBox[comparison.igaProductId], width =screenWidth * 0.21 )
@@ -137,7 +132,9 @@ fun comparisonItem(product:OBProduct, width:Double){
 fun emptyComparisonItem(width:Double, origin:String){
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painter = painterResource(id = R.drawable.image_blank), contentDescription = null,
-            modifier =Modifier.height((width*0.95).dp).width((width*0.95).dp) )
+            modifier = Modifier
+                .height((width * 0.95).dp)
+                .width((width * 0.95).dp) )
         Text(" ")
         Text("\$NaN ")
         Text(" per ")

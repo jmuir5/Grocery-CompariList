@@ -13,14 +13,17 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.noxapps.grocerycomparer.classes.OBComparison
 import com.noxapps.grocerycomparer.classes.OBProduct
 
 @Composable
-fun Search(viewModel:SearchViewModel= SearchViewModel(),origin:String = "any") {
+fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostController
+           ,origin:String = "any", comparisonId:Long){
     val searchResult = remember{mutableStateListOf<OBProduct>()}
     var searchText by remember {mutableStateOf("")}
+    var holder = 0.toLong()
     Column() {
         Text(text = "search page")
         TextField(value = searchText, onValueChange = {searchText = it})
@@ -36,16 +39,19 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(),origin:String = "any") {
         //comparison head
         LazyColumn{
             searchResult.forEach(){
-                item(){ productCard(it)}
+                item(){ productCard(it, comparisonId, navController)}
             }
         }
 
     }
+
 }
 
 
 @Composable
-fun productCard(product:OBProduct){
+fun productCard(product:OBProduct, comparisonId: Long, navController: NavHostController){
+    val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
+    val activeComparison = comparisonBox[comparisonId]
     Row() {
         AsyncImage(model = product.imgSrc, contentDescription = null,
             modifier = Modifier
@@ -57,6 +63,18 @@ fun productCard(product:OBProduct){
             Text(product.price)
             Text(product.origin)
             Text(product.Id.toString())
+            Button(onClick = {
+                when(product.origin){
+                    "coles"->activeComparison.colesProductId = product.Id
+                    "woolworths"->activeComparison.woolworthsProductId = product.Id
+                    "aldi"->activeComparison.aldiProductId = product.Id
+                    "iga"->activeComparison.igaProductId = product.Id
+                }
+                comparisonBox.put(activeComparison)
+                navController.popBackStack()
+            }) {
+                Text(text = "Select Product")
+            }
         }
 
     }
