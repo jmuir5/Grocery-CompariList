@@ -25,6 +25,14 @@ import com.noxapps.grocerycomparer.classes.OBProduct
 fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController) {
     //var currentList by remember(mutableStateOf())
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
+
+    /*comparisonBox.all.forEach{
+        if(it.colesProductId+it.woolworthsProductId+
+            it.aldiProductId+it.igaProductId==0.toLong()
+            &&it.name=="") {
+            comparisonBox.remove(it.id)
+        }
+    }*/
     Column() {
         Text(text = "home page")
         Button(onClick = {

@@ -28,11 +28,14 @@ import io.objectbox.annotation.Id
 fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController, id:Long) {
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
-    val comparison = comparisonBox[id]
 
-    Log.d("comparisonTag", comparison.id.toString())
+    var comparison = comparisonBox[id]
 
     var comparisonName by remember{ mutableStateOf(comparison.name) }
+
+    //Log.d("comparisonTag", comparison.id.toString())
+
+
     Scaffold(
         //topBar ={},
         floatingActionButton = {},
@@ -40,7 +43,9 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
         content = {padding->
             Column() {
                 Text(modifier = Modifier.padding(padding), text = "ComparisonPage")
-                TextField(value = comparisonName, onValueChange = {comparisonName=it},
+                TextField(value = comparisonName, onValueChange = {
+                    comparisonName=it;comparison.name=it},
+
                     label = { Text(text = "Comparison Name")}
                 )
                 LazyColumn() {
@@ -80,6 +85,8 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
                             comparison.id
                         )}
                     }
+
+
                 }
             }
 
@@ -89,14 +96,18 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
                 .fillMaxWidth()
                 .height(80.dp),
                 onClick = {
-                    if(comparison.colesProductId+comparison.woolworthsProductId+
-                        comparison.aldiProductId+comparison.igaProductId==0.toLong()
-                        &&comparison.name==""){
-                        comparisonBox.remove(comparison.id)
-                    }else{
-                        comparisonBox.put(comparison)
+                    try{
+                        if(comparison.colesProductId+comparison.woolworthsProductId+
+                            comparison.aldiProductId+comparison.igaProductId==0.toLong()
+                            &&comparison.name==""){
+                            comparisonBox.remove(comparison.id)
+                        }else{
+                            comparisonBox.put(comparison)
+                        }
+                    }catch(e:Exception){}
+                    finally{
+                        navController.popBackStack()
                     }
-                    navController.popBackStack()
                 }) {
                 Text(text = "Save Comparison")
             }
@@ -169,6 +180,7 @@ fun emptyComparisonProductCard(navController: NavHostController, origin:String, 
                 .height((100).dp)
                 .width((100).dp) )
         Button(onClick = {
+
             navController.navigate(Routes.Search.Path+"/"+origin+"/"+compId.toString()) }) {
             Text(text = "Add $origin Product")
         }

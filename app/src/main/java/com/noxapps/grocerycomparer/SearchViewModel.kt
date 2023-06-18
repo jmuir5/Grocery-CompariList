@@ -29,4 +29,22 @@ class SearchViewModel():ViewModel() {
 
 
     }
+
+    fun originIndication(origin:String):List<Int>{
+        /*
+        produce
+        meat
+        pantry
+        alcohol
+        tobacco
+        seasonal
+         */
+        when (origin){
+            "coles" ->return listOf(0,1,1,1,0,0,2)
+            "woolworths" -> return listOf(1,1,1,1,1,0,1)
+            "aldi"-> return listOf(2,0,1,1,1,0,2)
+            "iga"->return listOf(3,1,1,1,0,0,0)
+        }
+        return listOf(4,0,0,0,0,0,0)
+    }
 }

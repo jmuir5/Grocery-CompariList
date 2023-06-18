@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
@@ -23,10 +26,17 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
            ,origin:String = "any", comparisonId:Long){
     val searchResult = remember{mutableStateListOf<OBProduct>()}
     var searchText by remember {mutableStateOf("")}
-    var holder = 0.toLong()
+
+
     Column() {
-        Text(text = "search page")
-        TextField(value = searchText, onValueChange = {searchText = it})
+        TextField(value = searchText, onValueChange = {searchText = it},
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { searchResult.removeAll(searchResult)
+                    viewModel.searchString(searchText, origin).forEach(){
+                        searchResult.add(it)
+                    } }
+            ))
 
         Button(onClick = {
             searchResult.removeAll(searchResult)
@@ -38,6 +48,12 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
         }
         //comparison head
         LazyColumn{
+            if(searchResult.isEmpty()) {
+                item(){
+                    infoPanel(infoArray = viewModel.originIndication(origin))
+                }
+
+            }
             searchResult.forEach(){
                 item(){ productCard(it, comparisonId, navController)}
             }
@@ -77,5 +93,31 @@ fun productCard(product:OBProduct, comparisonId: Long, navController: NavHostCon
             }
         }
 
+    }
+}
+
+@Composable
+fun infoPanel(infoArray:List<Int>){
+    val origin = when(infoArray[0]){
+        0->"Coles"
+        1->"Woolworths"
+        2->"Aldi"
+        3->"IGA"
+        else->"All"
+    }
+    val categoryArray = listOf("Produce","Meat", "Pantry", "Alcohol", "Tobacco", "Seasonal")
+    Column() {
+        Text("Currently Searching $origin products")
+        categoryArray.forEachIndexed() { index, it ->
+            Text("${infoEmoji(infoArray[index + 1])} $it")
+        }
+    }
+}
+
+fun infoEmoji(input:Int):String{
+    when(input){
+        0->return "❌"
+        1->return "✔"
+        else -> return "❓"
     }
 }
