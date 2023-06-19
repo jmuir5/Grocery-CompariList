@@ -13,6 +13,8 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -26,21 +28,30 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
            ,origin:String = "any", comparisonId:Long){
     val searchResult = remember{mutableStateListOf<OBProduct>()}
     var searchText by remember {mutableStateOf("")}
+    val focusManager = LocalFocusManager.current
+    val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
+
 
 
     Column() {
-        TextField(value = searchText, onValueChange = {searchText = it},
+        TextField(value = searchText, onValueChange = {
+            searchText = it
+            searchResult.removeAll(searchResult)
+            viewModel.searchString(searchText, origin, productBox).forEach(){it2->
+                searchResult.add(it2)
+
+            }
+                                                      },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onDone = { searchResult.removeAll(searchResult)
-                    viewModel.searchString(searchText, origin).forEach(){
-                        searchResult.add(it)
-                    } }
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ))
 
         Button(onClick = {
             searchResult.removeAll(searchResult)
-            viewModel.searchString(searchText, origin).forEach(){
+            viewModel.searchString(searchText, origin, productBox).forEach(){
                 searchResult.add(it)
             }
         }) {

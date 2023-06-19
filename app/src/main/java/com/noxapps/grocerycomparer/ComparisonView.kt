@@ -32,7 +32,6 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
     var comparison by remember { mutableStateOf(comparisonBox[id])}//by remember {mutableStateOf(comparisonBox[id])}
-
     var comparisonName by remember{ mutableStateOf(comparison.name) }
 
     //Log.d("comparisonTag", comparison.id.toString())
@@ -43,11 +42,9 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
         floatingActionButton = {},
         //drawerContent = {},
         content = {padding->
-            Column() {
-                Text(modifier = Modifier.padding(padding), text = "ComparisonPage")
+            Column(modifier = Modifier.padding(padding),) {
                 TextField(value = comparisonName, onValueChange = {
                     comparisonName=it;comparison.name=it},
-
                     label = { Text(text = "Comparison Name")}
                 )
 
@@ -144,7 +141,7 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
                     Text(text = "❌")
                 }
                 Button(modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .height(80.dp),
                     onClick = {
                         try {
