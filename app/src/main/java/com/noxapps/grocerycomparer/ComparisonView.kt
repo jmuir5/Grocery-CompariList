@@ -29,7 +29,7 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
 
-    var comparison = comparisonBox[id]
+    var comparison =comparisonBox[id]//by remember {mutableStateOf(comparisonBox[id])}
 
     var comparisonName by remember{ mutableStateOf(comparison.name) }
 
@@ -85,6 +85,7 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
                             comparison.id
                         )}
                     }
+                    item(){ Spacer(modifier = Modifier.height(80.dp))}
 
 
                 }
@@ -92,24 +93,42 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
 
         },
         bottomBar = {
-            Button(modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-                onClick = {
-                    try{
-                        if(comparison.colesProductId+comparison.woolworthsProductId+
-                            comparison.aldiProductId+comparison.igaProductId==0.toLong()
-                            &&comparison.name==""){
-                            comparisonBox.remove(comparison.id)
-                        }else{
-                            comparisonBox.put(comparison)
-                        }
-                    }catch(e:Exception){}
-                    finally{
+            Row(modifier = Modifier
+                .fillMaxWidth()) {
+                Button(modifier = Modifier
+                    .fillMaxWidth(0.2f)
+                    .height(80.dp).background(Color.Red),
+                    onClick = {
+                        val holder = comparison.id
+                        comparison = OBComparison()
+                        comparisonBox.remove(holder)
                         navController.popBackStack()
-                    }
-                }) {
-                Text(text = "Save Comparison")
+
+                    }) {
+                    Text(text = "❌")
+                }
+                Button(modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(80.dp),
+                    onClick = {
+                        try {
+                            if (comparison.colesProductId + comparison.woolworthsProductId +
+                                comparison.aldiProductId + comparison.igaProductId == 0.toLong()
+                                && comparison.name == ""
+                            ) {
+                                val holder = comparison.id
+                                comparison = OBComparison()
+                                comparisonBox.remove(holder)
+                            } else {
+                                comparisonBox.put(comparison)
+                            }
+                        } catch (e: Exception) {
+                        } finally {
+                            navController.popBackStack()
+                        }
+                    }) {
+                    Text(text = "Save Comparison")
+                }
             }
 
 
@@ -161,6 +180,32 @@ fun comparisonProductCard(product:OBProduct, navController: NavHostController, c
             Text(product.Id.toString())
             Button(onClick = { navController.navigate(Routes.Search.Path+"/"+product.origin+"/"+compId.toString()) }) {
                 Text(text = "Change Product")
+            }
+            Button(onClick = {
+                val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
+                val compHolder = comparisonBox[compId]
+                when(product.origin){
+                    "coles"-> {
+                        compHolder.colesProductId=0.toLong()
+                    }
+                    "woolworths"-> {
+                        compHolder.woolworthsProductId=0.toLong()
+                    }
+                    "aldi"-> {
+                        compHolder.aldiProductId=0.toLong()
+                    }
+                    "iga"-> {
+                        compHolder.igaProductId=0.toLong()
+                    }
+                    else-> {
+                        Log.e("something went wrong", "comparison view, remove product, abnormal product origin")
+                    }
+                }
+                comparisonBox.put(compHolder)
+                expanded=false
+
+            }) {
+                Text(text = "Remove Product")
             }
         }
 
