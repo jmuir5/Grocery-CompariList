@@ -20,16 +20,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.noxapps.grocerycomparer.classes.OBComparison
+import com.noxapps.grocerycomparer.classes.OBComparison_
 import com.noxapps.grocerycomparer.classes.OBProduct
+import io.objectbox.android.AndroidScheduler
 import io.objectbox.annotation.Id
+import io.objectbox.reactive.DataSubscriptionList
 
 
 @Composable
 fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController, id:Long) {
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
-
-    var comparison =comparisonBox[id]//by remember {mutableStateOf(comparisonBox[id])}
+    var comparison by remember { mutableStateOf(comparisonBox[id])}//by remember {mutableStateOf(comparisonBox[id])}
 
     var comparisonName by remember{ mutableStateOf(comparison.name) }
 
@@ -48,47 +50,81 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
 
                     label = { Text(text = "Comparison Name")}
                 )
+
                 LazyColumn() {
                     if (comparison.colesProductId == 0.toLong()) {
-                        item(){emptyComparisonProductCard(navController, "coles", comparison.id)}
+                        item() {
+                            emptyComparisonProductCard(
+                                navController,
+                                "coles",
+                                comparison.id
+                            )
+                        }
                     } else {
-                        item(){comparisonProductCard(
-                            product = productBox[comparison.colesProductId],
-                            navController = navController,
-                            comparison.id
-                        )}
+                        item() {
+                            comparisonProductCard(
+                                product = productBox[comparison.colesProductId],
+                                navController = navController,
+                                comparison.id
+                            )
+                        }
                     }
                     if (comparison.woolworthsProductId == 0.toLong()) {
-                        item(){emptyComparisonProductCard(navController, "woolworths",comparison.id)}
+                        item() {
+                            emptyComparisonProductCard(
+                                navController,
+                                "woolworths",
+                                comparison.id
+                            )
+                        }
                     } else {
-                        item(){comparisonProductCard(
-                            product = productBox[comparison.woolworthsProductId],
-                            navController = navController,
-                            comparison.id
-                        )}
+                        item() {
+                            comparisonProductCard(
+                                product = productBox[comparison.woolworthsProductId],
+                                navController = navController,
+                                comparison.id
+                            )
+                        }
                     }
                     if (comparison.aldiProductId == 0.toLong()) {
-                        item(){emptyComparisonProductCard(navController, "aldi",comparison.id)}
+                        item() {
+                            emptyComparisonProductCard(
+                                navController,
+                                "aldi",
+                                comparison.id
+                            )
+                        }
                     } else {
-                        item(){comparisonProductCard(
-                            product = productBox[comparison.aldiProductId],
-                            navController = navController,
-                            comparison.id
-                        )}
+                        item() {
+                            comparisonProductCard(
+                                product = productBox[comparison.aldiProductId],
+                                navController = navController,
+                                comparison.id
+                            )
+                        }
                     }
                     if (comparison.igaProductId == 0.toLong()) {
-                        item(){emptyComparisonProductCard(navController, "iga",comparison.id)}
+                        item() {
+                            emptyComparisonProductCard(
+                                navController,
+                                "iga",
+                                comparison.id
+                            )
+                        }
                     } else {
-                        item(){comparisonProductCard(
-                            product = productBox[comparison.igaProductId],
-                            navController = navController,
-                            comparison.id
-                        )}
+                        item() {
+                            comparisonProductCard(
+                                product = productBox[comparison.igaProductId],
+                                navController = navController,
+                                comparison.id
+                            )
+                        }
                     }
-                    item(){ Spacer(modifier = Modifier.height(80.dp))}
+                    item() { Spacer(modifier = Modifier.height(80.dp)) }
 
 
                 }
+
             }
 
         },
@@ -186,7 +222,7 @@ fun comparisonProductCard(product:OBProduct, navController: NavHostController, c
                 val compHolder = comparisonBox[compId]
                 when(product.origin){
                     "coles"-> {
-                        compHolder.colesProductId=0.toLong()
+                        compHolder.colesProductId= 0L
                     }
                     "woolworths"-> {
                         compHolder.woolworthsProductId=0.toLong()
@@ -202,7 +238,10 @@ fun comparisonProductCard(product:OBProduct, navController: NavHostController, c
                     }
                 }
                 comparisonBox.put(compHolder)
-                expanded=false
+                navController.navigate(Routes.ComparisonView.Path+"/"+compId){
+                    popUpTo(Routes.Home.Path)
+                }
+                //expanded=false
 
             }) {
                 Text(text = "Remove Product")
