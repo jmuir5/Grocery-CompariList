@@ -1,9 +1,6 @@
 package com.noxapps.grocerycomparer
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,31 +30,34 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
 
 
 
-    Column() {
-        TextField(value = searchText, onValueChange = {
-            searchText = it
-            searchResult.removeAll(searchResult)
-            viewModel.searchString(searchText, origin, productBox).forEach(){it2->
-                searchResult.add(it2)
+    Column(modifier = Modifier.padding(4.dp)) {
+        TextField(value = searchText,
+            label = {Text(text="Search...")},
+            onValueChange = {
+                searchText = it
+                searchResult.removeAll(searchResult)
+                if (searchText.length >2) {
+                    viewModel.searchString(searchText, origin, productBox).forEach() { it2 ->
+                        searchResult.add(it2)
 
-            }
-                                                      },
+                    }
+                }
+            },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
+                    if (searchText.length <2&&searchText!="") {
+                        searchResult.removeAll(searchResult)
+                        viewModel.searchString(searchText, origin, productBox).forEach() { it2 ->
+                            searchResult.add(it2)
+                        }
+                    }
                     focusManager.clearFocus()
                 }
-            ))
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        Button(onClick = {
-            searchResult.removeAll(searchResult)
-            viewModel.searchString(searchText, origin, productBox).forEach(){
-                searchResult.add(it)
-            }
-        }) {
-            Text(text = "search for product name")
-        }
-        //comparison head
         LazyColumn{
             if(searchResult.isEmpty()) {
                 item(){
