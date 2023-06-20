@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 
 import androidx.navigation.NavHostController
@@ -14,7 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.noxapps.grocerycomparer.classes.OBComparison
@@ -31,6 +35,9 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
     var comparison by remember { mutableStateOf(comparisonBox[id])}
     var comparisonName by remember{ mutableStateOf(comparison.name) }
+
+    val focusManager = LocalFocusManager.current
+
     if (comparisonName == "123Placeholder321"){
         comparison.name=""
         comparisonName = ""
@@ -51,6 +58,13 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
             Column(modifier = Modifier.padding(padding),) {
                 TextField(value = comparisonName, onValueChange = {
                     comparisonName=it;comparison.name=it},
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+
+                            focusManager.clearFocus()
+                        }
+                    ),
                     label = { Text(text = "Comparison Name")}
                 )
 
