@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +37,7 @@ fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostContr
     Column() {
         Text(text = "home page")
         Button(onClick = {
-            val comparison = OBComparison()
+            val comparison = OBComparison(name="123Placeholder321")
             comparisonBox.put(comparison)
             navController.navigate(Routes.ComparisonView.Path+"/"+comparison.id)/*TODO: add Comparison*/ }) {
             Text(text = "Add Product")
@@ -44,9 +45,15 @@ fun Home(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostContr
         //comparison head
         LazyColumn {
             comparisonBox.all.forEach {
-                item() {
-                    Spacer(modifier = Modifier.height(1.dp))
-                    comparisonCard(it, navController)
+                if (it.colesProductId + it.woolworthsProductId +
+                    it.aldiProductId + it.igaProductId == 0.toLong()
+                    && it.name == ""){
+                    comparisonBox.remove(it.id)
+                }else {
+                    item() {
+                        Spacer(modifier = Modifier.height(1.dp))
+                        comparisonCard(it, navController)
+                    }
                 }
             }
         }
@@ -58,66 +65,81 @@ fun comparisonCard(comparison: OBComparison, navController:NavHostController){
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
-    Row(modifier = Modifier
-        .width(screenWidth.dp).height(200.dp)
-        ) {
-        Column(modifier = Modifier.width((screenWidth*0.16).dp).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally){//head
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { navController.navigate(Routes.ComparisonView.Path+"/"+comparison.id) }) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(comparison.name)
-            Button(onClick = { navController.navigate(Routes.ComparisonView.Path+"/"+comparison.id) }) {
-                Text("Edit")
-            }
         }
-        Column(modifier = Modifier
-            .width((screenWidth * 0.21).dp)
-            .background(Color(0xFFFFC2C2))
-            .fillMaxHeight()
-            ){//coles
-            if(comparison.colesProductId!= (0).toLong()){
-                comparisonItem(product = productBox[comparison.colesProductId], width =screenWidth * 0.21 )
-            }
-            else{
-                emptyComparisonItem(width = screenWidth * 0.21, origin = "coles")
-            }
+        Row(
+            modifier = Modifier
+                .width(screenWidth.dp)
+                .height(200.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .width((screenWidth * 0.25).dp)
+                    .background(Color(0xFFFFC2C2))
+                    .fillMaxHeight()
+            ) {//coles
+                if (comparison.colesProductId != (0).toLong()) {
+                    comparisonItem(
+                        product = productBox[comparison.colesProductId],
+                        width = screenWidth * 0.25
+                    )
+                } else {
+                    emptyComparisonItem(width = screenWidth * 0.25, origin = "coles")
+                }
 
 
-        }
-        Column(modifier = Modifier
-            .width((screenWidth * 0.21).dp)
-            .background(Color(0xFFc4ffc2))
-            .fillMaxHeight()
-            ){//woolworths
-            if(comparison.woolworthsProductId!= (0).toLong()){
-                comparisonItem(product = productBox[comparison.woolworthsProductId], width =screenWidth * 0.21 )
             }
-            else{
-                emptyComparisonItem(width = screenWidth * 0.21, origin = "woolworths")
+            Column(
+                modifier = Modifier
+                    .width((screenWidth * 0.25).dp)
+                    .background(Color(0xFFc4ffc2))
+                    .fillMaxHeight()
+            ) {//woolworths
+                if (comparison.woolworthsProductId != (0).toLong()) {
+                    comparisonItem(
+                        product = productBox[comparison.woolworthsProductId],
+                        width = screenWidth * 0.25
+                    )
+                } else {
+                    emptyComparisonItem(width = screenWidth * 0.25, origin = "woolworths")
+                }
             }
-        }
-        Column(modifier = Modifier
-            .width((screenWidth * 0.21).dp)
-            .background(Color(0xfffffcc2))
-            .fillMaxHeight()
-            ){//aldi
-            if(comparison.aldiProductId!= (0).toLong()){
-                comparisonItem(product = productBox[comparison.aldiProductId], width =screenWidth * 0.21 )
+            Column(
+                modifier = Modifier
+                    .width((screenWidth * 0.25).dp)
+                    .background(Color(0xfffffcc2))
+                    .fillMaxHeight()
+            ) {//aldi
+                if (comparison.aldiProductId != (0).toLong()) {
+                    comparisonItem(
+                        product = productBox[comparison.aldiProductId],
+                        width = screenWidth * 0.25
+                    )
+                } else {
+                    emptyComparisonItem(width = screenWidth * 0.25, origin = "aldi")
+                }
             }
-            else{
-                emptyComparisonItem(width = screenWidth * 0.21, origin = "aldi")
+            Column(
+                modifier = Modifier
+                    .width((screenWidth * 0.25).dp)
+                    .background(Color(0xFFc7fdff))
+                    .fillMaxHeight()
+            ) {//iga
+                if (comparison.igaProductId != (0).toLong()) {
+                    comparisonItem(
+                        product = productBox[comparison.igaProductId],
+                        width = screenWidth * 0.25
+                    )
+                } else {
+                    emptyComparisonItem(width = screenWidth * 0.25, origin = "iga")
+                }
             }
-        }
-        Column(modifier = Modifier
-            .width((screenWidth * 0.21).dp)
-            .background(Color(0xFFc7fdff))
-            .fillMaxHeight()
-            ){//iga
-            if(comparison.igaProductId!= (0).toLong()){
-                comparisonItem(product = productBox[comparison.igaProductId], width =screenWidth * 0.21 )
-            }
-            else{
-                emptyComparisonItem(width = screenWidth * 0.21, origin = "iga")
-            }
-        }
 
+        }
     }
 }
 

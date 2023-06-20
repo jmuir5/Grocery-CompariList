@@ -8,13 +8,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.noxapps.grocerycomparer.classes.OBComparison
@@ -37,7 +34,7 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
                 searchText = it
                 searchResult.removeAll(searchResult)
                 if (searchText.length >2) {
-                    viewModel.searchString(searchText, origin, productBox).forEach() { it2 ->
+                    viewModel.searchString(searchText, origin, productBox).forEach { it2 ->
                         searchResult.add(it2)
 
                     }
@@ -48,7 +45,7 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
                 onDone = {
                     if (searchText.length <2&&searchText!="") {
                         searchResult.removeAll(searchResult)
-                        viewModel.searchString(searchText, origin, productBox).forEach() { it2 ->
+                        viewModel.searchString(searchText, origin, productBox).forEach { it2 ->
                             searchResult.add(it2)
                         }
                     }
@@ -60,13 +57,13 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
 
         LazyColumn{
             if(searchResult.isEmpty()) {
-                item(){
-                    infoPanel(infoArray = viewModel.originIndication(origin))
+                item{
+                    InfoPanel(infoArray = viewModel.originIndication(origin))
                 }
 
             }
-            searchResult.forEach(){
-                item(){ productCard(it, comparisonId, navController)}
+            searchResult.forEach{
+                item{ ProductCard(it, comparisonId, navController)}
             }
         }
 
@@ -76,16 +73,16 @@ fun Search(viewModel:SearchViewModel= SearchViewModel(), navController: NavHostC
 
 
 @Composable
-fun productCard(product:OBProduct, comparisonId: Long, navController: NavHostController){
+fun ProductCard(product:OBProduct, comparisonId: Long, navController: NavHostController){
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val activeComparison = comparisonBox[comparisonId]
-    Row() {
+    Row {
         AsyncImage(model = product.imgSrc, contentDescription = null,
             modifier = Modifier
                 .height(100.dp)
                 .width(100.dp)
         )
-        Column() {
+        Column {
             Text(product.name)
             Text(product.price)
             Text(product.origin)
@@ -108,7 +105,7 @@ fun productCard(product:OBProduct, comparisonId: Long, navController: NavHostCon
 }
 
 @Composable
-fun infoPanel(infoArray:List<Int>){
+fun InfoPanel(infoArray:List<Int>){
     val origin = when(infoArray[0]){
         0->"Coles"
         1->"Woolworths"
@@ -117,18 +114,18 @@ fun infoPanel(infoArray:List<Int>){
         else->"All"
     }
     val categoryArray = listOf("Produce","Meat", "Pantry", "Alcohol", "Tobacco", "Seasonal")
-    Column() {
+    Column {
         Text("Currently Searching $origin products")
-        categoryArray.forEachIndexed() { index, it ->
+        categoryArray.forEachIndexed { index, it ->
             Text("${infoEmoji(infoArray[index + 1])} $it")
         }
     }
 }
 
 fun infoEmoji(input:Int):String{
-    when(input){
-        0->return "❌"
-        1->return "✔"
-        else -> return "❓"
+    return when(input){
+        0-> "❌"
+        1-> "✔"
+        else -> "❓"
     }
 }

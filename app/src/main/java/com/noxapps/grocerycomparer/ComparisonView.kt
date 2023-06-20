@@ -1,17 +1,15 @@
 package com.noxapps.grocerycomparer
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Button
+import androidx.compose.material.*
 
 import androidx.navigation.NavHostController
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +29,17 @@ import io.objectbox.reactive.DataSubscriptionList
 fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: NavHostController, id:Long) {
     val comparisonBox = ObjectBox.store.boxFor(OBComparison::class.java)
     val productBox = ObjectBox.store.boxFor(OBProduct::class.java)
-    var comparison by remember { mutableStateOf(comparisonBox[id])}//by remember {mutableStateOf(comparisonBox[id])}
+    var comparison by remember { mutableStateOf(comparisonBox[id])}
     var comparisonName by remember{ mutableStateOf(comparison.name) }
-
+    if (comparisonName == "123Placeholder321"){
+        comparison.name=""
+        comparisonName = ""
+        comparisonBox.put(comparison)
+    }
+    var backPressed = remember{ mutableStateOf(false) }
+    BackHandler{
+        backPressed.value = true
+    }
     //Log.d("comparisonTag", comparison.id.toString())
 
 
@@ -167,6 +173,37 @@ fun ComparisonView(viewModel: HomeViewModel = HomeViewModel(), navController: Na
 
         }
     )
+    if(backPressed.value) {
+        AlertDialog(
+            onDismissRequest = {
+                backPressed.value = false
+            },
+            title = {
+                Text(text = "Are you sure you want to go back?")
+            },
+            text = {
+
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        comparisonBox.put(comparison)
+                        backPressed.value = false
+                        navController.popBackStack()
+                    }) {
+                    Text("Continue")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        backPressed.value = false
+                    }) {
+                    Text("cancel")
+                }
+            }
+        )
+    }
 }
 
 @Composable
